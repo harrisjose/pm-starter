@@ -1,0 +1,58 @@
+import { Link } from "react-router-dom";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/state/1/app.jsx?raw";
+import stylesContent from "../sandboxes/state/1/styles.css?raw";
+import schemaContent from "../sandboxes/state/1/schema.js?raw";
+import footerContent from "../sandboxes/state/1/footer.jsx?raw";
+import Spacer from "../components/spacer.tsx";
+import { ReactComponent as ArrowRight } from "../assets/arrow-right-circle.svg";
+
+# State and Transactions 🥞
+
+In ProseMirror, the **EditorState** represents the complete state of the editor, including the document, selection, and various config options. Consider it to be a snapshot of the editor's state at a specific moment.
+
+Let's take a look at how we can use the **EditorState** along with the schema we built previously.
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/footer.js": footerContent,
+    "/schema.js": { code: schemaContent, readOnly: true },
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/App.js", "/schema.js"],
+    activeFile: "/App.js",
+    editorHeight: 500,
+    autoReload: true,
+    showLineNumbers: true,
+  }}
+/>
+
+In **line 10-12** we initialize an editor state using our previously defined schema. We also create an intial **doc** from JSON using the `schema.nodeFromJSON` method (in ./schema.js).
+
+The **EditorState** has other properties like `Selection` and `Plugins` but we'll look at those later. For now, this is all that's required to get ProseMirror render our document in the editor.
+
+### What are Transactions?
+
+Coming back to the code, in **line 14-20** we've got a dispatch function that accepts a `Transaction` and applies it to the existing state to produce a new state (**EditorState** is immutable).
+
+**Transactions** (or more accurately [Transforms](https://prosemirror.net/docs/guide/#transform)) are how prosemirror manages changes. Any changes to the selection, document are all expressed via **Transactions** that are applied on the current state to produce a newer version of the state.
+
+Transactions can consist of a series of **Steps** that describe changes to the document. Try loggin the `tr` in the sandbox and inspect it in your browser console to see what Steps look like.
+
+<Spacer space={10} />
+
+Next Up: <Link to="/transactions" className="no-underline hover:text-green-600">Learn more about transactions <ArrowRight className="inline-block"/></Link>

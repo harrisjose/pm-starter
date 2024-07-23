@@ -1,0 +1,102 @@
+import NextPage from "../components/nextpage.tsx";
+import Spacer from "../components/spacer.tsx";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/nodesinreact/1/app.jsx?raw";
+import stylesContent from "../sandboxes/nodesinreact/1/styles.css?raw";
+import schemaContent from "../sandboxes/nodesinreact/1/schema.js?raw";
+import footerContent from "../sandboxes/nodesinreact/1/footer.jsx?raw";
+import imageContent from "../sandboxes/nodesinreact/1/image.jsx?raw";
+
+# Building Nodes in React
+
+Before we go into building nodes with React, let's cover a ProseMirror feature that supports this - NodeViews.
+
+Node views make it possible to define UI components for individual nodes in your document. They allow you to render their DOM, define the way they are updated, and write custom code to react to events. `react-prosemirror` gives us a few primitives to build NodeViews with React that we'll be using here.
+
+We'll be focussing on building a simple image component that we'll be adding to our editor with a NodeView. We create an image node first and add it to our schema. Since the image node won't contain any editable content within it, we can mark it as an `atom` node.
+
+```tsx
+const imageNode = {
+  group: "block",
+  atom: true,
+};
+```
+
+Now we'll create a simple image component that just renders an image from an url.
+
+```tsx
+const ImageNode = (props: NodeViewComponentProps) => {
+  const onClickCb = useEditorEventCallback(() => {
+    window.alert("Image clicked!");
+  });
+  return (
+    <img
+      url={
+        "https://images.unsplash.com/photo-1692309093742-cc3dfd08e6ee?fit=crop&w=2835&q=80"
+      }
+      width={100}
+      height={100}
+      onClick={onClickCb}
+    />
+  );
+};
+```
+
+Now to tie these two things together, we create a mapping between the image node and the image component. We'll use the [`useNodeViews`](https://github.com/nytimes/react-prosemirror/tree/main#building-nodeviews-with-react) hook to acheive this.
+
+```tsx
+const nodeViewSpec = useMemo(
+  () => ({
+    image: () => ({
+      component: ImageBlock,
+      dom: document.createElement("div"),
+    }),
+  }),
+  []
+);
+
+const { nodeViews, renderNodeViews } = useNodeViews(nodeViewSpec);
+
+<ProseMirror {...editorProps}>
+  <div ref={setMount} />
+  {renderNodeViews()}
+</ProseMirror>;
+```
+
+You can manage your events and updates like you'd normally do in a react component with the added advantage of having access to prosemirror's view via the `useEditorEffect`, `useEditorEventCallback` and `useEditorEventListener` hooks.
+
+You also have access to the node and selection state via the props of the NodeView. Check the [type definition](https://github.com/nytimes/react-prosemirror/blob/main/src/nodeViews/createReactNodeViewConstructor.tsx#L21) of `NodeViewComponentProps` to know more.
+
+Here's the sandbox with the above code in action:
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/footer.js": footerContent,
+    "/image.js": imageContent,
+    "/schema.js": schemaContent,
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/App.js", "/image.js", "/schema.js"],
+    activeFile: "/App.js",
+    editorHeight: 500,
+    autoReload: true,
+    showLineNumbers: true,
+  }}
+/>
+
+<Spacer space={10} />
+<NextPage to="/nodesadvanced">Building editable nodes </NextPage>

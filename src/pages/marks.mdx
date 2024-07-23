@@ -1,0 +1,69 @@
+import NextPage from "../components/nextpage.tsx";
+import Spacer from "../components/spacer.tsx";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/marks/1/app.jsx?raw";
+import stylesContent from "../sandboxes/marks/1/styles.css?raw";
+import schemaContent from "../sandboxes/marks/1/schema.js?raw";
+import footerContent from "../sandboxes/marks/1/footer.jsx?raw";
+
+# Styling nodes with Marks
+
+In HTML, a paragraph with markup is represented as a tree, like this:
+
+```html
+<p>
+  This is <strong>strong text with <em>emphasis</em></strong>
+</p>
+```
+
+In ProseMirror, the inline content is modeled as a flat sequence, with the markup attached as metadata to the nodes. This is typically done in the form of `Marks`. A mark is a piece of information that can be attached to a node, such as it being emphasized, in code font, or a link.
+
+We can define marks in the schema the same way we define nodes. Let's take a look at a simple mark that applies the `strong` tag around a piece of text:
+
+```js
+marks: {
+  strong: {
+    parseDOM: [
+      { tag: "strong" },
+    ],
+    toDOM() { return ["strong", 0]; }
+  },
+}
+```
+
+An easy way to apply this mark on a piece of text is to use the toggleMark helper from `prosemirror-commands`. Take a look at the sandbox below to see how it works. You can also try defining your own mark from the example.
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/footer.js": footerContent,
+    "/schema.js": schemaContent,
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/footer.js", "/schema.js"],
+    activeFile: "/footer.js",
+    editorHeight: 500,
+    autoReload: true,
+    showLineNumbers: true,
+  }}
+/>
+
+You can do a lot more with marks like adding attributes to it, defining which nodes can contain marks etc. Take a look at the official docs for more examples.
+
+If you just need a way to change how the view renders content without actually changing/adding anything to the document, you can use [decorations](https://prosemirror.net/docs/guide/#view.decorations) instead.
+
+<Spacer space={10} />
+<NextPage to="/nodesinreact">Writing Nodes in React</NextPage>

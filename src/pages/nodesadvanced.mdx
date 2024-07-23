@@ -1,0 +1,78 @@
+import NextPage from "../components/nextpage.tsx";
+import Spacer from "../components/spacer.tsx";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/nodesinreact/2/app.jsx?raw";
+import stylesContent from "../sandboxes/nodesinreact/2/styles.css?raw";
+import schemaContent from "../sandboxes/nodesinreact/2/schema.js?raw";
+import footerContent from "../sandboxes/nodesinreact/2/footer.jsx?raw";
+import labelContent from "../sandboxes/nodesinreact/2/label.jsx?raw";
+
+# Making your nodes editable
+
+Besides having react components as NodeViews, ProseMirror also lets you create editable areas within these NodeViews. These regions are completely managed by ProseMirror and are defined by the node's schema definition.
+
+We'll be building a small label component as our NodeView. The label will have a text area that you can edit and have a color picker that let's you pick the label color.
+
+Let's start by defining our schema:
+
+```js
+const label = {
+  group: "block",
+  content: "text*",
+  // We dont define `atom: true` since this node will have content managed by prosemirror.
+};
+```
+
+Now let's look at how we can create the NodeView. `react-prosemirror` will pass the editable content as `children` to our NodeView component.
+
+```Label.tsx
+import EmojiPicker from "emoji-picker-react";
+
+const LabelComponent = ({children}: NodeViewComponentProps) => {
+  return (
+    <div styles={{ display: "flex", flexDirection: "row" }}>
+      <...code for color picker...>
+      <div styles={{width: '100px'}}>
+       // Editable area managed by prosemirror
+       {children}
+      </div>
+    </div>
+  );
+};
+```
+
+Here is the final result:
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+      "react-color": "^2.19.3",
+      "@radix-ui/react-popover": "^1.0.7",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/footer.js": footerContent,
+    "/label.js": labelContent,
+    "/schema.js": schemaContent,
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/label.js", "/schema.js", "/App.js"],
+    activeFile: "/label.js",
+    editorHeight: 500,
+    autoReload: true,
+    showLineNumbers: true,
+  }}
+/>
+
+<Spacer space={10} />
+{/* <NextPage to="/plugins">Writing custom plugins </NextPage> */}

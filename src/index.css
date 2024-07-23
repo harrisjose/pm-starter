@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    place-items: center;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+
+  #root {
+    @apply h-full w-full min-h-screen min-w-full dark:bg-gray-900;
+  }
+
+  .prose p code {
+    @apply p-1 bg-slate-800 rounded;
+  }
+
+  .prose .callout {
+    @apply prose-sm pl-4 pr-2 py-1 rounded bg-slate-700;
+  }
+}

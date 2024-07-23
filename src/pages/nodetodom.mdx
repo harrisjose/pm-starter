@@ -1,0 +1,55 @@
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/schema/1/app.jsx?raw";
+import stylesContent from "../sandboxes/schema/1/styles.css?raw";
+import schemaContent from "../sandboxes/schema/2/schema.js?raw";
+import Spacer from "../components/spacer.tsx";
+import { ReactComponent as ArrowRight } from "../assets/arrow-right-circle.svg";
+import { Link } from "react-router-dom";
+
+# Defining the Schema 🍱 (contd.)
+
+The paragraph node also includes methods that let Prosemirror parse/render it as a `p` tag in the actual DOM.
+
+```
+paragraph: {
+  group: "block",
+  content: "inline*",
+  parseDOM: [{ tag: "p" }],
+  toDOM() {
+    return ["p", 0];
+  },
+}
+```
+
+Take a look at the [serialize/deserialize](https://prosemirror.net/docs/guide/#schema.serialization_and_parsing) section in the docs to know more about these functions.
+
+Let's play around with this a little. Try changing the `p` tags in parseDom and toDom to heading tags (`h1` or `h2`) and see what happens!
+
+<Sandpack
+  template="react"
+  className="not-prose"
+  theme="dark"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/schema.js": { code: schemaContent, readOnly: false },
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/schema.js"],
+    activeFile: "/schema.js",
+    autoReload: true,
+  }}
+/>
+
+<Spacer space={10} />
+
+Next Up: <Link to="/state" className="no-underline hover:text-green-600">Learn about the editor state <ArrowRight className="inline-block"/></Link>

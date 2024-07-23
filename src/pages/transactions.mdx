@@ -1,0 +1,136 @@
+import Spacer from "../components/spacer.tsx";
+import NextPage from "../components/nextpage.tsx";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/transactions/1/app.jsx?raw";
+import stylesContent from "../sandboxes/transactions/1/styles.css?raw";
+import schemaContent from "../sandboxes/transactions/1/schema.js?raw";
+import footerContent from "../sandboxes/transactions/1/footer.jsx?raw";
+import footerContent2 from "../sandboxes/transactions/2/footer.jsx?raw";
+
+# Transactions & Commands 🕊️
+
+Let's look at a practical example of using transactions to change something in our editor. We'll be adding a node to the editor in response to the user clicking a button.
+
+As we've learnt before transactions that describe changes to the document contain a series of steps. Usually these steps are generated for you when you use methods in the transaction.
+
+You can create a new transaction using `view.state.tr` and dispatch it using `view.dispatch(tr)`
+
+<div className="callout">
+  Note that `view` here is an instance of
+  [`prosemirror-view`](https://prosemirror.net/docs/guide/#view) which holds the
+  current EditorState, handles rendering the EditorState and responding to user
+  input. You don't need to know in detail about this just yet but knowing about
+  the view is essential when you build text-editors.
+</div>
+
+Let's take a look at the `insert` method:
+
+```js
+tr.insert(position, Node.fromJSON(schema, { type: "paragraph" }));
+```
+
+<div className="callout">
+  `tr.insert` take a node and inserts it to a specified position in the
+  document. `Node.fromJSON` is a helper function we can use to create an
+  instance of the node from its JSON representation.
+</div>
+
+Here's an example that does all of this:
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/footer.js": footerContent,
+    "/schema.js": { code: schemaContent },
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/footer.js", "/schema.js", "/App.js"],
+    activeFile: "/footer.js",
+    editorHeight: 500,
+    autoReload: true,
+    showLineNumbers: true,
+  }}
+/>
+
+<Spacer space={10} />
+
+Transactions are not just for CRUD operations. They are also used to set the
+selection, move the current cursor position among other operations. Let's look
+at an example:
+
+In the previous sandbox try adding in the following code at `line 22`
+
+```js
+tr.setSelection(
+  new TextSelection(
+    tr.doc.resolve(newPos + node.nodeSize),
+    tr.doc.resolve(newPos)
+  )
+);
+```
+
+Click on the reload button once and then try adding the node again. The code we added now creates a new text selection that selects the newly created node.
+
+### Abstracting actions into commands
+
+In ProseMirror, a command is a function that implements an editing action (like adding a node to the document), which the user can perform by pressing some key combination or interacting with the menu.
+
+Commands have certain rules but are essentially a function that takes the state and a dispatch function and returns a boolean. Typically the function executes transactions on the state it was passed and dispatches them.
+
+Let's take a look at an example:
+
+```js
+function deleteSelection(state, dispatch) {
+  if (state.selection.empty) return false;
+  if (dispatch) dispatch(state.tr.deleteSelection());
+  return true;
+}
+```
+
+The above command deletes the current selection if there is one and then returns true. The `prosemirror-commands` module provides a number of editing commands. There is also an utility function `chainCommands` that can be used to combine a number of commands — they will be tried one after the other until one return true.
+
+We'll look at complex commands when we work with `Marks` but here is a simple example that you can play around with:
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/footer.js": footerContent2,
+    "/schema.js": { code: schemaContent },
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/footer.js", "/schema.js", "/App.js"],
+    activeFile: "/footer.js",
+    editorHeight: 500,
+    autoReload: true,
+    showLineNumbers: true,
+  }}
+/>
+
+<Spacer space={10} />
+<NextPage to="/marks">Styling content with Marks</NextPage>

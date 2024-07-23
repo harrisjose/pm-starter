@@ -1,0 +1,29 @@
+body {
+  font-family: sans-serif;
+  -webkit-font-smoothing: auto;
+  -moz-font-smoothing: auto;
+  -moz-osx-font-smoothing: grayscale;
+  font-smoothing: auto;
+  text-rendering: optimizeLegibility;
+  font-smooth: always;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  font-size: 16px;
+}
+
+.ProseMirror {
+  border: 1px solid #cdcdcd;
+  padding: 5px;
+}
+.ProseMirror p {
+  font-size: 1rem;
+}
+.ProseMirror h1 {
+  font-size: 1.7rem;
+}
+.ProseMirror h2 {
+  font-size: 1.5rem;
+}
+.ProseMirror h3 {
+  font-size: 1.25rem;
+}

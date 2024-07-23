@@ -1,0 +1,68 @@
+import { Link } from "react-router-dom";
+import { Sandpack } from "@codesandbox/sandpack-react";
+import appContent from "../sandboxes/schema/1/app.jsx?raw";
+import stylesContent from "../sandboxes/schema/1/styles.css?raw";
+import schemaContent from "../sandboxes/schema/1/schema.js?raw";
+import Spacer from "../components/spacer.tsx";
+import { ReactComponent as ArrowRight } from "../assets/arrow-right-circle.svg";
+
+# Defining the Schema 🍱
+
+ProseMirror requires you to specify a schema that your document conforms to always. The schema is then used to create a state which will generate the document. We'll cover in future sections so let's focus on the **schema** for now.
+
+The schema describes the kind of nodes that may occur in the document, and the way they are nested. For example, we might say that the top-level node can contain one or more paragraph nodes, and that paragraph nodes can contain text.
+
+Here's how we can express that as code:
+
+<Sandpack
+  template="react"
+  theme="dark"
+  className="not-prose"
+  customSetup={{
+    dependencies: {
+      "@nytimes/react-prosemirror": "0.2.3",
+      "prosemirror-commands": "1.5.2",
+      "prosemirror-dropcursor": "1.8.1",
+      "prosemirror-keymap": "1.2.2",
+      "prosemirror-schema-basic": "1.2.2",
+    },
+  }}
+  files={{
+    "/App.js": appContent,
+    "/schema.js": { code: schemaContent, readOnly: true },
+    "/styles.css": stylesContent,
+  }}
+  options={{
+    visibleFiles: ["/schema.js"],
+    activeFile: "/schema.js",
+  }}
+/>
+
+<div className="callout">
+  Note that keys like 'enter' don't work just yet since Prosemirror doesn't
+  handle them by default. We'll be implementing them via plugins which are
+  covered later.
+</div>
+
+Let's try to understand what's going on here better. First up is the document node:
+
+```
+doc: { content: "block+" },
+```
+
+We've specified here that the `doc` node must contain at least one `block` node as it's content. `block` here can either mean a group or a node.
+
+Next is the paragraph node.
+
+```
+paragraph: {
+  group: "block",
+  content: "inline*",
+}
+```
+
+Here we've specified that the paragraph node belongs to the `block` group and can contain any number of nodes from the `inline` group as it's content.
+
+<Spacer space={10} />
+
+Next Up: <Link to="/nodetodom" className="no-underline hover:text-green-600">More about Nodes <ArrowRight className="inline-block"/></Link>
